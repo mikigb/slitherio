@@ -101,6 +101,11 @@
 			    ctx.fillStyle = ball.colour;
 			    ctx.fill();
 			    ctx.closePath();
+			    ctx.beginPath();
+				ctx.arc(ball.x, ball.y, ball.ballRadius, 0, Math.PI*2);
+				ctx.fillStyle = "#000000";
+				ctx.stroke();
+				ctx.closePath();
 
 			    var i;
 
@@ -117,6 +122,11 @@
 				    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
 				    ctx.fillStyle = balls[i].colour;
 				    ctx.fill();
+				    ctx.closePath();
+				    ctx.beginPath();
+				    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
+				    ctx.fillStyle = "#000000";
+				    ctx.stroke();
 				    ctx.closePath();
 				}
 			}

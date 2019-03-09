@@ -35,6 +35,7 @@ function main(){
 	    this.dirX = 0;
 	    this.dirY = 0;
 	    this.vel = 2;
+	    this.eaten = false;
 	}
 
 	//Used to store the coords of the player tail
@@ -64,7 +65,7 @@ function main(){
 
 	//apple array creation
 	var i;
-	var maxballs = 100;
+	var maxballs = 10;
 	var maxbombs = 10;
 	var balls = new Array(maxballs);
 	var bombs = new Array(maxbombs);
@@ -126,23 +127,26 @@ function main(){
 			ctx.stroke();
 			ctx.closePath();
 		}
-
-	    for(i = 0; i < maxballs; i++){                                
-		    ctx.beginPath();
-		    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
-		    ctx.fillStyle = balls[i].colour;
-		    ctx.fill();
-		    ctx.closePath();
-		    ctx.beginPath();
-		    ctx.arc(balls[i].x+balls[i].ballRadius/2*0.707, balls[i].y-balls[i].ballRadius/2*0.707, balls[i].ballRadius/3, 0, Math.PI*2);
-		    ctx.fillStyle = "#ffffff";
-		    ctx.fill();
-		    ctx.closePath();
-		    ctx.beginPath();
-		    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
-		    ctx.fillStyle = "#000000";
-		    ctx.stroke();
-		    ctx.closePath();
+		var winFlag = 0;
+	    for(i = 0; i < maxballs; i++){
+	    	if(balls[i].eaten == false){ 
+	    		winFlag++;                       
+			    ctx.beginPath();
+			    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
+			    ctx.fillStyle = balls[i].colour;
+			    ctx.fill();
+			    ctx.closePath();
+			    ctx.beginPath();
+			    ctx.arc(balls[i].x+balls[i].ballRadius/2*0.707, balls[i].y-balls[i].ballRadius/2*0.707, balls[i].ballRadius/3, 0, Math.PI*2);
+			    ctx.fillStyle = "#ffffff";
+			    ctx.fill();
+			    ctx.closePath();
+			    ctx.beginPath();
+			    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
+			    ctx.fillStyle = "#000000";
+			    ctx.stroke();
+			    ctx.closePath();
+			}
 		}
 
 		for(i = 0; i < maxbombs; i++){                                
@@ -167,6 +171,10 @@ function main(){
 			ctx.stroke();
 			ctx.closePath();
 		}
+
+
+		if(!winFlag)
+			win();
 	}
 
 	//controls the collisions between the player and the apple
@@ -179,6 +187,7 @@ function main(){
 		    	ball.ballRadius+=0.02;
 		    	document.getElementById("score").innerHTML = ball.tam;
 	    	} 
+	    	ball2.eaten = true;
 	        ball2.x = Math.random() * (canvas.width - 0) + 0;
 	        ball2.y = Math.random() * (canvas.height - 0) + 0;
 	        ball2.ballRadius = Math.random() * (maxBallRadius - minBallRadius) + minBallRadius;
@@ -192,6 +201,7 @@ function main(){
 		    	ball.ballRadius+=0.02;
 		    	document.getElementById("score").innerHTML = ball.tam;
 	    	} 
+	    	ball2.eaten = true;
 	        ball2.x = Math.random() * (canvas.width - 0) + 0;
 	        ball2.y = Math.random() * (canvas.height - 0) + 0;
 	        ball2.ballRadius = Math.random() * (maxBallRadius - minBallRadius) + minBallRadius;
@@ -316,6 +326,23 @@ function main(){
 	    ctx.closePath();
 	}
 
+	function win(){
+		clearInterval(refreshIntervalId);
+		ctx.globalAlpha = 0.9;
+		ctx.beginPath();
+	    ctx.rect(0, 0, canvas.width, canvas.height);
+	    ctx.fillStyle = "#ffffff";
+	    ctx.fill();
+	    ctx.closePath();
+	    ctx.globalAlpha = 1;
+		ctx.beginPath();
+		ctx.font = "100px Roboto";
+	    ctx.fillStyle = "#000000";
+		ctx.textAlign = "center";
+		ctx.fillText("You Win", canvas.width/2, canvas.height/2); 
+	    ctx.closePath();
+	}
+
 	//main loop
 	function draw() {
 	    drawBall();
@@ -324,12 +351,14 @@ function main(){
 
 	    var i;
 	    for(i = 0; i < maxballs; i++){
-	    	if((i%(Math.floor(Math.random() * 2)))==0){
-	    		calculateRandMov(balls[i]);
-	    	}
-	    	balls[i].x += balls[i].dirX*(balls[i].vel/2);
-	    	balls[i].y += balls[i].dirY*(balls[i].vel/2);
-	    	collides(ball, balls[i]);
+	    	if(balls[i].eaten == false){
+		    	if((i%(Math.floor(Math.random() * 2)))==0){
+		    		calculateRandMov(balls[i]);
+		    	}
+		    	balls[i].x += balls[i].dirX*(balls[i].vel/2);
+		    	balls[i].y += balls[i].dirY*(balls[i].vel/2);
+		    	collides(ball, balls[i]);
+		    }
 	    }
 
 	    for(i = 0; i < maxbombs; i++){

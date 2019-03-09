@@ -3,271 +3,47 @@
 	<head>
 	    <meta charset="utf-8" />
 	    <title>Gamedev Canvas Workshop</title>
+	    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 	    <style>
-	    	* { padding: 0; margin: 0; }
-	    	canvas { background: #eee; display: block; margin: 0 auto; }
+	    	* { padding: 0; 
+	    		margin: 0; 
+	    	}
+	    	canvas { 
+	    		background: #ffffff; 
+	    		display: block; 
+	    		margin: 0 auto; 
+	    	}
+	    	body {
+		      	font-family: 'Roboto', sans-serif;
+		      	font-size: 14px;
+		      	font-weight: lighter;
+		      	font-style: italic;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+		    }
 	    </style>
+	    <script src="gameScript.js" type="text/javascript"></script>
 	</head>
 	<body>
-
-		<canvas id="myCanvas"></canvas>
+		<div style="height: 67px; display: flex; flex-direction: row; background-color: #000000; color: #ffffff;">
+			<h1 style="padding-left: 100px; padding-right: 10px; padding-top: 20px;">Score:</h1>
+			<h1 id="score" style="padding-top: 20px;"></h1>
+			<h1 style="padding-left: 100px; padding-right: 10px; padding-top: 20px;">Lifes:</h1>
+			<h1 id="lifes" style="padding-top: 20px;"></h1>
+			<form style="padding-left: 100px; padding-top: 20px;"><input style="height: 30px; border-radius: 10px; border: 1px solid grey;" type="text" name="playerName" placeholder="Enter your name"></form>
+		</div>
+		<div style="height: 3px; background-color: #FB0C06;"></div>
+		
+		<canvas id="myCanvas">
+			
+		</canvas>
 
 		<script>
-			var canvas = document.getElementById("myCanvas");
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-			var ctx = canvas.getContext("2d");
-
-			//Player structure
-			function Ball(x, y, ballRadius, colour, tam) {
-			    this.x = x;
-			    this.y = y;
-			    this.ballRadius = ballRadius;
-			    this.colour = colour;
-			    this.tam = tam;
-			    this.cola = new Array(2000);
-			    this. vel = 2;
-			}
-
-			var maxBallRadius = 20;
-			var minBallRadius = 5
-
-			//Apple structure
-			function Apple(x, y, ballRadius, colour) {
-			    this.x = x;
-			    this.y = y;
-			    this.ballRadius = ballRadius;
-			    this.colour = colour;
-			    this.nIters = Math.floor(Math.random() * 400);
-			    this.dirX = 0;
-			    this.dirY = 0;
-			    this.vel = 2;
-			}
-
-			//Used to store the coords of the player tail
-			function coords(x,y){
-				this.x = x;
-				this.y = y;
-			}
-
-			//random color for apples
-			function getRandomColor() {
-			    var letters = '0123456789ABCDEF';
-			    var color = '#';
-			    for (var i = 0; i < 6; i++) {
-			    	color += letters[Math.floor(Math.random() * 16)];
-			    }
-			    return color;
-			}
-
-			//player creation
-			var ball = new Ball(canvas.width/2, canvas.height/2, 10, getRandomColor(), 0);
-
-			//player creation
-			var enemyBall = new Ball(canvas.width/4, canvas.height/4, 10, getRandomColor(), 0);
-
-			//apple array creation
-			var i;
-			var maxballs = 100;
-			var balls = new Array(maxballs);
-			for(i = 0; i < maxballs; i++){
-				balls[i] = new Apple(Math.random() * (canvas.width - 0) + 0, Math.random() * (canvas.height - 0) + 0, Math.random() * (maxBallRadius - minBallRadius) + minBallRadius, getRandomColor());
-			}
-
-			//mouse event handler
-			var mouseX = 0;
-			var mouseY = 0;
-			document.addEventListener("mousemove", mouseMoveHandler, false);
-			function mouseMoveHandler(e){
-			    mouseX = e.clientX;
-    			mouseY = e.clientY;
-			}
-
-			document.addEventListener("mousedown", mouseDownHandler, false);
-			function mouseDownHandler(e){
-			    ball.vel = 4;
-			}
-
-			document.addEventListener("mouseup", mouseupUpHandler, false);
-			function mouseupUpHandler(e) {
-			    ball.vel = 2;
-			}
-
-			//draws the objects on the screen
-			function drawBall() {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-			    ctx.beginPath();
-			    ctx.arc(ball.x, ball.y, ball.ballRadius, 0, Math.PI*2);
-			    ctx.fillStyle = ball.colour;
-			    ctx.fill();
-			    ctx.closePath();
-			    ctx.beginPath();
-				ctx.arc(ball.x, ball.y, ball.ballRadius, 0, Math.PI*2);
-				ctx.fillStyle = "#000000";
-				ctx.stroke();
-				ctx.closePath();
-
-			    var i;
-
-				for(i = 0; i < ball.tam; i++){
-					ctx.beginPath();
-			    	ctx.arc(ball.cola[i].x, ball.cola[i].y, ball.ballRadius, 0, Math.PI*2);
-			    	ctx.fillStyle = ball.colour;
-			    	ctx.fill();
-			    	ctx.closePath();
-				}
-
-			    for(i = 0; i < maxballs; i++){
-				    ctx.beginPath();
-				    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
-				    ctx.fillStyle = balls[i].colour;
-				    ctx.fill();
-				    ctx.closePath();
-				    ctx.beginPath();
-				    ctx.arc(balls[i].x, balls[i].y, balls[i].ballRadius, 0, Math.PI*2);
-				    ctx.fillStyle = "#000000";
-				    ctx.stroke();
-				    ctx.closePath();
-				}
-			}
-
-
-			//controls the collisions between the player and the apple
-			function collides(ball, ball2){
-				if((ball.x + ball.ballRadius + 1 > ball2.x ) && (ball.x - ball.ballRadius < ball2.x + ball2.ballRadius) && (ball.y < ball2.y + ball2.ballRadius) && (ball.y > ball2.y - ball2.ballRadius)) {
-			    	var i;
-			    	for(i = 5; i <= ball2.ballRadius; i+=2){
-			    		ball.cola[ball.tam] = new coords(2000, 2000);
-				    	ball.tam++;
-				    	ball.ballRadius+=0.02;
-			    	} 
-			        ball2.x = Math.random() * (canvas.width - 0) + 0;
-			        ball2.y = Math.random() * (canvas.height - 0) + 0;
-			        ball2.ballRadius = Math.random() * (maxBallRadius - minBallRadius) + minBallRadius;
-			    }
-
-			    if((ball.x - ball.ballRadius - 1 < ball2.x + ball2.ballRadius) && (ball.x + ball.ballRadius > ball2.x - ball2.ballRadius) && (ball.y < ball2.y + ball2.ballRadius) && (ball.y > ball2.y - ball2.ballRadius)) {
-			    	var i;
-			    	for(i = 5; i <= ball2.ballRadius; i+=2){
-			    		ball.cola[ball.tam] = new coords(2000, 2000);
-				    	ball.tam++;
-				    	ball.ballRadius+=0.02;
-			    	} 
-			        ball2.x = Math.random() * (canvas.width - 0) + 0;
-			        ball2.y = Math.random() * (canvas.height - 0) + 0;
-			        ball2.ballRadius = Math.random() * (maxBallRadius - minBallRadius) + minBallRadius;
-			    }
-			}
-
-			//generates random movement for the apples
-			function calculateRandMov(apple){
-				//HITING X POS WALL 
-			    if(((apple.x + apple.dirX*(apple.vel/2) + apple.ballRadius) > canvas.width)){ 
-			    	if(apple.dirY == 1){
-			    		apple.nIters = 301;			//GOING Y POS
-			    	} else if(apple.dirY == -1){
-			    		apple.nIters = 201;			//GOING Y NEG
-			    	}
-			    }
-
-			    //HITING Y POS WALL 
-			    else if(((apple.y + apple.dirY*(apple.vel/2) + apple.ballRadius) > canvas.height)){
-			    	if(apple.dirX == 1){
-			    		apple.nIters = 301;			//GOING X POS
-			    	} else if(apple.dirX == -1){
-			    		apple.nIters = 101;			//GOING X NEG
-			    	}
-			    }
-
-			    //HITING X NEG WALL 
-			    else if(((apple.x + apple.dirX*(apple.vel/2) - apple.ballRadius) < 0)){ 
-			    	if(apple.dirY == 1){
-			    		apple.nIters = 101;			//GOING Y POS
-			    	} else if(apple.dirY == -1){
-			    		apple.nIters = 0;			//GOING Y NEG
-			    	}
-			    }
-
-			    //HITING Y NEG WALL GOING X POS
-			    else if(((apple.y + apple.dirY*(apple.vel/2) - apple.ballRadius) < 0)){
-			    	if(apple.dirX == 1){
-			    		apple.nIters = 201;			//GOING X POS
-			    	} else if(apple.dirX == -1){
-			    		apple.nIters = 0;			//GOING X NEG
-			    	}
-			    }
-
-			    apple.nIters++;
-
-			    if(apple.nIters <= 100){
-			    	apple.dirX = 1;
-			    	apple.dirY = 1;
-			    	if(apple.nIters == 100)
-			    		apple.nIters = Math.floor(Math.random() * 400);
-			    } else if(apple.nIters <= 200){
-			    	apple.dirX = 1;
-			    	apple.dirY = -1;
-			    	if(apple.nIters == 200)
-			    		apple.nIters = Math.floor(Math.random() * 400);
-			    } else if(apple.nIters <= 300){
-			    	apple.dirX = -1;
-			    	apple.dirY = 1;
-			    	if(apple.nIters == 300)
-			    		apple.nIters = Math.floor(Math.random() * 400);
-			    } else if(apple.nIters <= 400){
-			    	apple.dirX = -1;
-			    	apple.dirY = -1;
-			    	if(apple.nIters == 400)
-			    		apple.nIters = Math.floor(Math.random() * 400);
-			    }
-			}
-
-			function calculatePlayerMovements(ball, objX, objY){
-				var difX = objX - ball.x;
-			    var difY = objY - ball.y;
-
-			    var hipotenusa = Math.sqrt(difX*difX+difY*difY);
-
-			    var relation = ball.vel/hipotenusa;
-
-			    ball.x += difX*relation;
-			    ball.y += difY*relation;
-			}
-
-			//main loop
-			function draw() {
-			    drawBall();
-
-			    calculatePlayerMovements(ball, mouseX, mouseY);
-
-			    var i;
-			    for(i = 0; i < maxballs; i++){
-			    	if((i%(Math.floor(Math.random() * 2)))==0){
-			    		calculateRandMov(balls[i]);
-			    	}
-			    	balls[i].x += balls[i].dirX*(balls[i].vel/2);
-			    	balls[i].y += balls[i].dirY*(balls[i].vel/2);
-			    	collides(ball, balls[i]);
-			    }
-
-			    if(ball.tam != 0){
-					var auxX2 = ball.cola[0].x;
-			    	var auxY2 = ball.cola[0].y;
-			    
-			    	ball.cola[0].x = ball.x;
-			    	ball.cola[0].y = ball.y;
-			    	for(i = 0; i < ball.tam; i++){
-				    	auxX = ball.cola[i].x;
-				    	auxY = ball.cola[i].y;
-				    	ball.cola[i].x = auxX2;
-				    	ball.cola[i].y = auxY2;
-				    	auxX2 = auxX;
-				    	auxY2 = auxY;
-				    }
-				}
-			}
-
-			setInterval(draw, 10);
+			main()
 		</script>
 
 	</body>

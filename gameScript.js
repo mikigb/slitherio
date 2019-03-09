@@ -17,7 +17,7 @@ function main(){
 	    this.tam = tam;
 	    this.cola = new Array(2000);
 	    this. vel = 2;
-	    this.lifes = 3;
+	    this.lives = 3;
 	}
 
 	var maxBallRadius = 20;
@@ -56,7 +56,7 @@ function main(){
 	//player creation
 	var ball = new Ball(canvas.width/2, canvas.height/2, 10, /*getRandomColor()*/'#FB0C06', 0);
 
-	document.getElementById("lifes").innerHTML = ball.lifes;
+	document.getElementById("lives").innerHTML = ball.lives;
 	document.getElementById("score").innerHTML = '0';
 
 	//enemy creation
@@ -200,10 +200,10 @@ function main(){
 
 	function collideBomb(ball, ball2){
 		if((ball.x + ball.ballRadius + 1 > ball2.x ) && (ball.x - ball.ballRadius < ball2.x + ball2.ballRadius) && (ball.y < ball2.y + ball2.ballRadius) && (ball.y > ball2.y - ball2.ballRadius)) {
-			ball.lifes--;
-	    	document.getElementById("lifes").innerHTML = ball.lifes;
+			ball.lives--;
+	    	document.getElementById("lives").innerHTML = ball.lives;
 	    	//bombExplosion(ball2);
-	    	if(ball.lifes == 0){
+	    	if(ball.lives == 0){
 				loose();
 			}
 	        ball2.x = Math.random() * (canvas.width - 0) + 0;
@@ -212,10 +212,10 @@ function main(){
 	    }
 
 	    if((ball.x - ball.ballRadius - 1 < ball2.x + ball2.ballRadius) && (ball.x + ball.ballRadius > ball2.x - ball2.ballRadius) && (ball.y < ball2.y + ball2.ballRadius) && (ball.y > ball2.y - ball2.ballRadius)) {
-	    	ball.lifes--;
-	    	document.getElementById("lifes").innerHTML = ball.lifes;
+	    	ball.lives--;
+	    	document.getElementById("lives").innerHTML = ball.lives;
 	    	//bombExplosion(ball2);
-	    	if(ball.lifes == 0){
+	    	if(ball.lives == 0){
 				loose();
 			}
 	        ball2.x = Math.random() * (canvas.width - 0) + 0;
